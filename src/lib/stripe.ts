@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2024-12-18.acacia",
+  apiVersion: "2024-10-28.acacia",
 });
 
 export async function createCheckoutSession(credits: number) {
@@ -22,7 +22,7 @@ export async function createCheckoutSession(credits: number) {
         price_data: {
           currency: "inr",
           product_data: {
-            name: `${credits} Dionysus Credits`,
+            name: `${credits} GitMind Credits`,
           },
           unit_amount: Math.round((credits / 50) * 75 * 100),
         },

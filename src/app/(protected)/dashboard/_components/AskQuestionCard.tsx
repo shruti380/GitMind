@@ -10,7 +10,6 @@ import {
 import { Textarea } from "~/components/ui/textarea";
 import useProject from "~/hooks/use-project";
 import React, { useState } from "react";
-import { readStreamableValue } from "ai/rsc";
 import MDEditor from "@uiw/react-md-editor";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { api } from "~/trpc/react";
@@ -43,7 +42,8 @@ const AskQuestionCrad = () => {
     const { output, filesReferences } = await askQuestion(question, project.id);
     setFilesReferences(filesReferences);
 
-    for await (const delta of readStreamableValue(output)) {
+    // Consume the stream directly without readStreamableValue
+    for await (const delta of output) {
       if (delta) {
         setAnswer((ans) => ans + delta);
       }
@@ -120,7 +120,7 @@ const AskQuestionCrad = () => {
             ></Textarea>
             <div className="h-4"></div>
             <Button type="submit" disabled={loading}>
-              Ask Dionysus
+              Ask GitMind
             </Button>
           </form>
         </CardContent>

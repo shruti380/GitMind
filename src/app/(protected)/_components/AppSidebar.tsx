@@ -59,11 +59,14 @@ const AppSidebar = ({}: Props) => {
   const { open } = useSidebar();
   return (
     <Sidebar collapsible="icon" variant="floating">
+      {/* Hidden title for accessibility */}
+      <span className="sr-only">Navigation Menu</span>
+
       <SidebarHeader>
         <div className="flex items-center gap-2">
           <Image src="/logo.png" alt="logo" width={40} height={40} />
           {open && (
-            <h1 className="text-primary/80 text-xl font-bold">Dionysus</h1>
+            <h1 className="text-primary/80 text-xl font-bold">GitMind</h1>
           )}
         </div>
       </SidebarHeader>
@@ -99,7 +102,7 @@ const AppSidebar = ({}: Props) => {
             <SidebarMenu>
               {projects?.map((project) => {
                 return (
-                  <SidebarMenuItem key={project.name}>
+                  <SidebarMenuItem key={project.id}>
                     <SidebarMenuButton asChild>
                       <div onClick={() => setProjectId(project.id)}>
                         <div

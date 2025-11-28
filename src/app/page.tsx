@@ -16,7 +16,7 @@ export default function LandingPage() {
       <header className="flex h-14 items-center px-4 lg:px-6">
         <Link className="flex items-center justify-center" href="#">
           <Bot className="h-6 w-6" />
-          <span className="ml-2 text-2xl font-bold">Dionysus</span>
+          <span className="ml-2 text-2xl font-bold">GitMind</span>
         </Link>
       </header>
       <main className="flex-1">
@@ -28,7 +28,7 @@ export default function LandingPage() {
                   Revolutionize Your GitHub Workflow with AI
                 </h1>
                 <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
-                  Dionysus: Your AI-powered GitHub companion for seamless
+                  GitMind: Your AI-powered GitHub companion for seamless
                   collaboration, code analysis, and meeting insights.
                 </p>
               </div>
@@ -102,7 +102,7 @@ export default function LandingPage() {
                   Ready to Transform Your GitHub Experience?
                 </h2>
                 <p className="max-w-[600px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
-                  Join Dionysus today and unlock the power of AI for your GitHub
+                  Join GitMind today and unlock the power of AI for your GitHub
                   projects.
                 </p>
                 <Link href="/sign-up">
@@ -115,7 +115,7 @@ export default function LandingPage() {
       </main>
       <footer className="flex w-full shrink-0 flex-col items-center gap-2 border-t px-4 py-6 sm:flex-row md:px-6">
         <p className="text-xs text-gray-500 dark:text-gray-400">
-          © {new Date().getFullYear()} Dionysus. All rights reserved.
+          © {new Date().getFullYear()} GitMind. All rights reserved.
         </p>
         <nav className="flex gap-4 sm:ml-auto sm:gap-6">
           <Link className="text-xs underline-offset-4 hover:underline" href="#">

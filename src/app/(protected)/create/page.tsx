@@ -59,14 +59,14 @@ const page = ({}: Props) => {
             Link your Github Repository
           </h1>
           <p className="text-muted-foreground text-sm">
-            Enter the URL of your repository to link it to Dionysus
+            Enter the URL of your repository to link it to GitMind
           </p>
         </div>
 
         <div className="h4"></div>
 
         <div>
-          <div className="mt-4 mb-2 rounded-md border border-red-200 bg-red-50 px-4 py-2 text-red-700">
+          <div className="mb-2 mt-4 rounded-md border border-red-200 bg-red-50 px-4 py-2 text-red-700">
             <div className="flex items-center gap-2">
               <FileWarning className="size-4" />
               <p className="text-sm">

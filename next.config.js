@@ -11,7 +11,12 @@ const config = {
     },
     typescript: {
         ignoreBuildErrors: true,
-    }
+    },
+    // FIX: Updated the turbopack root to use the absolute path (process.cwd())
+    // to satisfy the Turbopack warning about needing an absolute path.
+    turbopack: {
+        root: process.cwd(),
+    },
 };
 
 export default config;

@@ -16,7 +16,10 @@ import CodeReferences from "../dashboard/_components/CodeReferences";
 
 const QaPage = () => {
   const { projectId } = useProject();
-  const { data: questions } = api.project.getQuestions.useQuery({ projectId });
+  const { data: questions } = api.project.getQuestions.useQuery(
+    { projectId: projectId! },
+    { enabled: !!projectId },
+  );
   const [questionIndex, setQuestionIndex] = React.useState(0);
   const question = questions?.[questionIndex];
 
@@ -43,7 +46,7 @@ const QaPage = () => {
                       <p className="line-clamp-1 text-lg font-medium text-gray-700">
                         {question.question}
                       </p>
-                      <span className="text-xs whitespace-nowrap text-gray-400">
+                      <span className="whitespace-nowrap text-xs text-gray-400">
                         {question.createdAt.toLocaleDateString()}
                       </span>
                     </div>

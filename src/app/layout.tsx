@@ -19,7 +19,14 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <ClerkProvider>
-      <html lang="en" className={`${GeistSans.variable}`}>
+      {/* FIX: Added suppressHydrationWarning={true} to ignore client/server mismatches 
+        on the root element, often caused by browser extensions or third-party scripts.
+      */}
+      <html 
+        lang="en" 
+        className={`${GeistSans.variable}`}
+        suppressHydrationWarning={true} // <-- Hydration mismatch fix
+      >
         <body>
           <TRPCReactProvider>{children}</TRPCReactProvider>
           <Toaster richColors />

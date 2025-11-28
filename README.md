@@ -1,5 +1,5 @@
 
-**Dionysus** is an AI-powered GitHub SaaS client designed to revolutionize project collaboration and management. With Dionysus, users can seamlessly integrate their GitHub repositories, explore commit histories, interact with AI to learn more about their projects, and manage their teams effectively. This platform leverages cutting-edge AI to simplify and enhance workflows, making teamwork effortless and efficient.
+**GitMind** is an AI-powered GitHub SaaS client designed to revolutionize project collaboration and management. With GitMind, users can seamlessly integrate their GitHub repositories, explore commit histories, interact with AI to learn more about their projects, and manage their teams effectively. This platform leverages cutting-edge AI to simplify and enhance workflows, making teamwork effortless and efficient.
 
 
 
@@ -19,7 +19,7 @@
 
 ### 3. **Team Collaboration**
 - Invite team members to work on projects collaboratively.
-- Generate a unique invitation URL for each project. When another Dionysus user clicks the URL, they can join the project and start collaborating.
+- Generate a unique invitation URL for each project. When another GitMind user clicks the URL, they can join the project and start collaborating.
 - Share your project and work together seamlessly.
 
 ### 4. **AI Assistance**
@@ -67,6 +67,6 @@
 
 ### Step 4: Collaborate with Your Team
 - Use the "Invite Team Members" feature to share your project.
-- Generate an invitation URL and share it with your team. Once they click the link and join Dionysus, they can collaborate on your project.
+- Generate an invitation URL and share it with your team. Once they click the link and join GitMind, they can collaborate on your project.
 
 ---

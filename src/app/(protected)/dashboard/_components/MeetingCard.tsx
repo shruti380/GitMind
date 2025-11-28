@@ -1,11 +1,11 @@
 "use client";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
-import { ArrowUpLeftFromSquare, Presentation, Upload } from "lucide-react";
+import { Presentation, Upload } from "lucide-react";
 import React from "react";
 import { useDropzone } from "react-dropzone";
 import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
-import { uploadFile } from "~/lib/cloudinary";
+import { uploadFile } from "~/lib/firebase";
 import { api } from "~/trpc/react";
 import useProject from "~/hooks/use-project";
 import { toast } from "sonner";
@@ -20,7 +20,6 @@ const MeetingCard = () => {
   const uploadMeeting = api.project.uploadMeeting.useMutation();
   const { project } = useProject();
 
-  // MEETING AUDIO PROCESSING FUCNTION USING ASSEMBLY-AI
   const processMeeting = useMutation({
     mutationFn: async (data: {
       meetingUrl: string;
@@ -28,7 +27,6 @@ const MeetingCard = () => {
       projectId: string;
     }) => {
       const { meetingUrl, meetingId, projectId } = data;
-      // hitting the /api/process-meeting endpoint to process the meeting
       const response = await axios.post("/api/process-meeting", {
         meetingUrl,
         meetingId,
@@ -38,96 +36,136 @@ const MeetingCard = () => {
     },
   });
 
-  // using react drop zone for audio upload and
-  const { getRootProps, getInputProps } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: {
       "audio/*": [".mp3", ".wav", ".m4a"],
     },
     multiple: false,
     maxSize: 50_000_000,
-    onDrop: async (acceptedFiles) => {
-      if (!project) return;
+    onDrop: async (acceptedFiles, rejectedFiles) => {
+      console.log(
+        "DROP TRIGGERED - Accepted:",
+        acceptedFiles.length,
+        "Rejected:",
+        rejectedFiles.length,
+      );
 
-      setIsUploading(true);
-      console.log(acceptedFiles);
+      if (rejectedFiles.length > 0) {
+        const rejection = rejectedFiles[0];
+        if (rejection?.errors[0]?.code === "file-too-large") {
+          toast.error("File is too large. Maximum size is 50MB");
+        } else if (rejection?.errors[0]?.code === "file-invalid-type") {
+          toast.error("Invalid file type. Please upload MP3, WAV, or M4A");
+        } else {
+          toast.error("File was rejected");
+        }
+        return;
+      }
+
+      if (!project) {
+        toast.error("No project selected");
+        return;
+      }
 
       const file = acceptedFiles[0];
-      if (!file) return;
+      if (!file) {
+        toast.error("No file selected");
+        return;
+      }
 
-      // after getting file, now upload it to cloudinary
-      const downloadURL = (await uploadFile(
-        file as File,
-        setProgress,
-      )) as string;
-      uploadMeeting.mutate(
-        {
+      console.log("Starting upload for:", file.name);
+      setIsUploading(true);
+      setProgress(0);
+
+      try {
+        console.log("Uploading to Firebase...");
+        const downloadURL = await uploadFile(file, setProgress);
+
+        if (!downloadURL) {
+          throw new Error("Failed to get download URL");
+        }
+
+        console.log("Upload complete! URL:", downloadURL);
+        console.log("Saving to database...");
+
+        const meeting = await uploadMeeting.mutateAsync({
           projectId: project.id,
           meetingUrl: downloadURL,
           name: file.name,
-        },
-        {
-          onSuccess: (meeting) => {
-            toast.success("Meeting uploaded successfully");
-            router.push("/meetings");
-            // after successfull-upload, now callng the processMeeting mutation
-            processMeeting.mutateAsync({
-              meetingUrl: downloadURL,
-              meetingId: meeting.id,
-              projectId: project.id,
-            });
-          },
-          onError: () => {
-            toast.error("Failed to upload meeting");
-          },
-        },
-      );
+        });
 
-      setIsUploading(false);
+        console.log("Meeting saved to database:", meeting.id);
+        toast.success("Meeting uploaded successfully");
+
+        processMeeting.mutate({
+          meetingUrl: downloadURL,
+          meetingId: meeting.id,
+          projectId: project.id,
+        });
+
+        router.push("/meetings");
+      } catch (error) {
+        console.error("Upload error:", error);
+        toast.error(
+          error instanceof Error ? error.message : "Failed to upload meeting",
+        );
+      } finally {
+        setIsUploading(false);
+        setProgress(0);
+      }
     },
   });
 
   return (
-    <Card
-      className="col-span-2 flex flex-col items-center justify-center p-10"
-      {...getRootProps()}
-    >
-      {!isUploading && (
-        <>
-          <Presentation className="h-10 w-10 animate-bounce"></Presentation>
-          <h3 className="mt-2 text-sm font-semibold text-gray-900">
-            Create a new meeting
-          </h3>
-          <p className="mt-1 text-center text-sm text-gray-500">
-            Analyse your meeting with Dionysus.
-            <br />
-            Powered by AI.
-          </p>
-          <div className="mt-6">
-            <Button disabled={isUploading}>
-              <Upload className="mr-1.5 -ml-0.5 h-5 w-5" aria-hidden="true" />
-              Upload Meeting
-              <input className="hidden" {...getInputProps()} />
-            </Button>
-          </div>
-        </>
-      )}
+    <Card className="col-span-2 flex flex-col items-center justify-center p-10">
+      <input {...getInputProps()} />
+      <div
+        {...getRootProps()}
+        className="flex w-full cursor-pointer flex-col items-center"
+      >
+        {!isUploading && (
+          <>
+            <Presentation className="h-10 w-10 animate-bounce" />
+            <h3 className="mt-2 text-sm font-semibold text-gray-900">
+              Create a new meeting
+            </h3>
+            <p className="mt-1 text-center text-sm text-gray-500">
+              {isDragActive ? (
+                "Drop the file here..."
+              ) : (
+                <>
+                  Analyse your meeting with GitMind.
+                  <br />
+                  Powered by AI.
+                </>
+              )}
+            </p>
+            <div className="mt-6">
+              <Button disabled={isUploading || !project} type="button">
+                <Upload className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true" />
+                Upload Meeting
+              </Button>
+            </div>
+          </>
+        )}
 
-      {isUploading && (
-        <div className="">
-          <CircularProgressbar
-            value={progress}
-            text={`${progress}%`}
-            className="size-20"
-            styles={buildStyles({
-              pathColor: "black",
-              textColor: "black",
-            })}
-          />
-          <p className="text-center text-sm text-gray-500">
-            Uploading your meeting...
-          </p>
-        </div>
-      )}
+        {isUploading && (
+          <div className="flex flex-col items-center gap-4">
+            <CircularProgressbar
+              value={progress}
+              text={`${progress}%`}
+              className="size-20"
+              styles={buildStyles({
+                pathColor: "black",
+                textColor: "black",
+              })}
+            />
+            <p className="text-center text-sm text-gray-500">
+              Uploading your meeting...
+            </p>
+          </div>
+        )}
+      </div>
     </Card>
   );
 };

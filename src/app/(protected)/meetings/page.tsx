@@ -6,23 +6,27 @@ import Link from "next/link";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { toast } from "sonner";
-import useRefetch from "~/hooks/use-refetch";
 import MeetingCard from "../dashboard/_components/MeetingCard";
 
 const MeetingsPage = () => {
   const { projectId } = useProject();
-  const { data: meetings } = api.project.getMeetings.useQuery(
-    { projectId },
+
+  // ✅ SIMPLE FIX: No auto-polling, just manual refetch when needed
+  const { data: meetings, refetch } = api.project.getMeetings.useQuery(
+    { projectId: projectId! }, // ✅ Non-null assertion (projectId is required in protected route)
     {
-      refetchInterval: 4000,
+      enabled: !!projectId, // ✅ Only run query if projectId exists
+      staleTime: 30000, // Consider data fresh for 30 seconds
+      refetchOnWindowFocus: false, // Don't refetch when switching tabs
     },
   );
+
   const deleteMeeting = api.project.deleteMeeting.useMutation();
-  const refetch = useRefetch();
+
   return (
     <>
-      <MeetingCard></MeetingCard>
-      <div className="h-6"></div>
+      <MeetingCard />
+      <div className="h-6" />
       <h1 className="text-xl font-semibold">Meetings</h1>
       <ul className="divide-y divide-gray-200">
         {meetings?.map((meeting) => (
