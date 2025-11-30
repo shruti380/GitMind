@@ -15,7 +15,7 @@ export const maxDuration = 60;
 export async function POST(req: NextRequest) {
   const { userId } = await auth();
   if (!userId) {
-    return NextResponse.json({ error: "Unatuthorized" }, { status: 401 });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
@@ -24,10 +24,26 @@ export async function POST(req: NextRequest) {
 
     const { meetingUrl, projectId, meetingId } = bodyParser.parse(body);
     console.log("Body parsed successfully");
+    console.log("Meeting URL:", meetingUrl);
+    console.log("Project ID:", projectId);
+    console.log("Meeting ID:", meetingId);
 
+    console.log("Starting processMeeting...");
     const { summaries } = await processMeeting(meetingUrl);
-    console.log("Process meeting successful:", summaries);
+    console.log(
+      "Process meeting successful. Summaries count:",
+      summaries.length,
+    );
 
+    if (!summaries || summaries.length === 0) {
+      console.error("No summaries returned from processMeeting");
+      return NextResponse.json(
+        { error: "No summaries generated" },
+        { status: 400 },
+      );
+    }
+
+    console.log("Creating issues in database...");
     await db.issue.createMany({
       data: summaries.map((summary) => ({
         start: summary.start,
@@ -38,7 +54,9 @@ export async function POST(req: NextRequest) {
         meetingId,
       })),
     });
+    console.log("Issues created successfully");
 
+    console.log("Updating meeting status...");
     await db.meeting.update({
       where: { id: meetingId },
       data: {
@@ -46,11 +64,22 @@ export async function POST(req: NextRequest) {
         name: summaries[0]!.headline,
       },
     });
+    console.log("Meeting updated successfully");
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
+    console.error("Error in process-meeting API:", error);
+    console.error("Error details:", {
+      message: error instanceof Error ? error.message : "Unknown error",
+      stack: error instanceof Error ? error.stack : undefined,
+      error: error,
+    });
+
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      {
+        error: "Internal Server Error",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 },
     );
   }

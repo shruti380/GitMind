@@ -29,32 +29,53 @@ function IssueCard({
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{issue.gist}</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto bg-white">
+          <DialogHeader className="space-y-3 pr-6">
+            <DialogTitle className="text-xl font-semibold leading-relaxed text-gray-900">
+              {issue.gist}
+            </DialogTitle>
+            <DialogDescription className="text-sm text-gray-500">
               {issue.createdAt.toLocaleDateString()}
             </DialogDescription>
-            <p className="text-gray-600">{issue.headline}</p>
-            <blockquote className="mt-2 border-l-4 border-gray-300 bg-gray-50 p-4">
-              <span className="text-sm text-gray-600">
+          </DialogHeader>
+          <div className="space-y-4 pt-4">
+            <p className="leading-relaxed text-gray-700">{issue.headline}</p>
+            <blockquote className="rounded-r border-l-4 border-gray-200 bg-gray-50 p-4">
+              <span className="mb-2 block text-sm text-gray-500">
                 {issue.start} - {issue.end}
               </span>
-              <p className="leading-relaxed font-medium text-gray-900 italic">
+              <p className="font-medium italic leading-relaxed text-gray-900">
                 {issue.summary}
               </p>
             </blockquote>
-          </DialogHeader>
+          </div>
         </DialogContent>
       </Dialog>
-      <Card className="relative">
-        <CardHeader>
-          <CardTitle className="text-xl">{issue.gist}</CardTitle>
-          <div className="border-b"></div>
-          <CardDescription>{issue.headline}</CardDescription>
+
+      <Card className="relative flex h-full flex-col transition-shadow hover:shadow-lg">
+        <CardHeader className="flex-1 pb-4">
+          <div className="space-y-2">
+            <CardTitle className="line-clamp-2 break-words text-lg font-semibold leading-tight">
+              {issue.gist}
+            </CardTitle>
+            <div className="text-xs text-gray-500">
+              {issue.createdAt.toLocaleDateString()}
+            </div>
+          </div>
+          <div className="my-3 border-b"></div>
+          <CardDescription className="line-clamp-4 text-sm leading-relaxed text-gray-600">
+            {issue.headline}
+          </CardDescription>
         </CardHeader>
-        <CardContent>
-          <Button onClick={() => setOpen(true)}>Details</Button>
+        <CardContent className="mt-auto pt-0">
+          <Button
+            onClick={() => setOpen(true)}
+            variant="outline"
+            size="sm"
+            className="w-full"
+          >
+            View Details
+          </Button>
         </CardContent>
       </Card>
     </>
@@ -74,26 +95,26 @@ const IssueList = ({ meetingId }: Props) => {
   );
 
   if (isLoading || !meeting) return <div>Loading...</div>;
+
   return (
     <div className="p-8">
       <div className="mx-auto flex max-w-2xl items-center justify-between gap-x-8 border-b pb-6 lg:mx-0 lg:max-w-none">
         <div className="flex items-center gap-x-6">
-          <div className="rounded-full border bg-white p-3">
-            <VideoIcon className="h-6 w-6" />
+          <div className="rounded-full border bg-white p-3 shadow-sm">
+            <VideoIcon className="h-6 w-6 text-gray-700" />
           </div>
-          <h1>
+          <div>
             <div className="text-sm leading-6 text-gray-600">
-              Meeting on {""} {meeting.createdAt.toLocaleDateString()}
+              Meeting on {meeting.createdAt.toLocaleDateString()}
             </div>
-
-            <div className="mt-1 text-base leading-6 font-semibold text-gray-900">
+            <h1 className="mt-1 text-base font-semibold leading-6 text-gray-900">
               {meeting.name}
-            </div>
-          </h1>
+            </h1>
+          </div>
         </div>
       </div>
-      <div className="h-4"></div>
-      <div className="grid grid-cols-1 sm:grid-cols-3">
+
+      <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {meeting.issues.map((issue) => (
           <IssueCard key={issue.id} issue={issue} />
         ))}
