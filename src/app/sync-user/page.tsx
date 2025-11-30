@@ -2,9 +2,7 @@ import { db } from "~/server/db";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { notFound, redirect } from "next/navigation";
 
-type Props = {};
-
-const page = async ({}: Props) => {
+const SyncUserPage = async () => {
   const { userId } = await auth();
 
   if (!userId) {
@@ -14,11 +12,13 @@ const page = async ({}: Props) => {
   const client = await clerkClient();
   const user = await client.users.getUser(userId);
 
-  console.log(user);
+  console.log("Syncing user:", user.id);
+
   if (!user.emailAddresses[0]?.emailAddress) {
     return notFound();
   }
 
+  // Sync user data to database
   await db.user.upsert({
     where: {
       emailAddress: user.emailAddresses[0].emailAddress ?? "",
@@ -37,7 +37,10 @@ const page = async ({}: Props) => {
     },
   });
 
+  console.log("User synced successfully, redirecting to dashboard...");
+
+  // Redirect to dashboard after sync
   return redirect("/dashboard");
 };
 
-export default page;
+export default SyncUserPage;
