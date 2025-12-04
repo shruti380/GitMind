@@ -41,7 +41,7 @@
 ## Tech Stack
 
 ### Frontend
-- Developed using **React** and deployed on **Vercel**.
+- Developed using **Next.js** and deployed on **Vercel**.
 
 ### Backend
 - AI transcription is handled by **Assembly AI**.
