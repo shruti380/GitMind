@@ -8,6 +8,7 @@ import { FormInput } from "~/types/FormInput";
 import { FileWarning, Info } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 type Props = {};
 
@@ -15,6 +16,7 @@ const page = ({}: Props) => {
   const { register, handleSubmit, reset } = useForm<FormInput>();
   const createProject = api.project.createProject.useMutation();
   const checkCredits = api.project.checkCredits.useMutation();
+  const router = useRouter();
 
   const refetch = useRefetch();
 
@@ -31,6 +33,8 @@ const page = ({}: Props) => {
             toast.success("Project created successfully");
             refetch();
             reset();
+            // Redirect to dashboard after successful project creation
+            router.push("/dashboard");
           },
           onError: () => {
             toast.error("Failed to create project");

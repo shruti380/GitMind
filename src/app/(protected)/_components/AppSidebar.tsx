@@ -21,6 +21,7 @@ import {
   LayoutDashboard,
   Plus,
   Presentation,
+  Check,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -103,20 +104,23 @@ const AppSidebar = ({}: Props) => {
               {projects?.map((project) => {
                 return (
                   <SidebarMenuItem key={project.id}>
-                    <SidebarMenuButton asChild>
-                      <div onClick={() => setProjectId(project.id)}>
-                        <div
-                          className={cn(
-                            "text-primary flex size-6 items-center justify-center rounded-sm border bg-white text-sm",
-                            {
-                              "bg-primary text-white": project.id === projectId,
-                            },
-                          )}
-                        >
-                          {project.name[0]}
-                        </div>
-                        <span>{project.name}</span>
+                    <SidebarMenuButton onClick={() => setProjectId(project.id)}>
+                      <div
+                        className={cn(
+                          "text-primary flex size-6 items-center justify-center rounded-sm border bg-white text-sm",
+                          {
+                            "bg-primary border-primary text-white":
+                              project.id === projectId,
+                          },
+                        )}
+                      >
+                        {project.id === projectId ? (
+                          <Check className="h-4 w-4" />
+                        ) : (
+                          project.name[0]
+                        )}
                       </div>
+                      <span>{project.name}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 );
